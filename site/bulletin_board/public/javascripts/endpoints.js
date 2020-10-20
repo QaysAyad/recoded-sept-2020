@@ -21,24 +21,24 @@ function create_post(title, message, callback) {
   };
 
   $.ajax({
-      type: "POST",
-      url: "/posts/",
-      data: JSON.stringify(post),
-      contentType: "application/json; charset=utf-8",
-      dataType: "json",
-      success: function(result){
-        callback({
-          success: true,
-          redirect_uri: result.redirect_uri
-        });
-      },
-      error: function(error) {
-        callback({
-          success: false,
-          redirect_uri: null,
-          error_message: error.responseJSON.error_message
-        });
-      }
+    type: "POST",
+    url: "/posts/",
+    data: JSON.stringify(post),
+    contentType: "application/json; charset=utf-8",
+    dataType: "json",
+    success: function (result) {
+      callback({
+        success: true,
+        redirect_uri: result.redirect_uri
+      });
+    },
+    error: function (error) {
+      callback({
+        success: false,
+        redirect_uri: null,
+        error_message: error.responseJSON.error_message
+      });
+    }
   });
 }
 
@@ -55,12 +55,12 @@ function upvote(id, state) {
   };
 
   $.ajax({
-      type: "POST",
-      url: "/posts/" + id + "/upvotes",
-      data: JSON.stringify(vote),
-      contentType: "application/json; charset=utf-8",
-      dataType: "json"
-    });
+    type: "POST",
+    url: "/posts/" + id + "/upvotes",
+    data: JSON.stringify(vote),
+    contentType: "application/json; charset=utf-8",
+    dataType: "json"
+  });
 }
 
 // Users
@@ -85,24 +85,24 @@ function signup(username, password, callback) {
   };
 
   $.ajax({
-      type: "POST",
-      url: "/users/",
-      data: JSON.stringify(credentials),
-      contentType: "application/json; charset=utf-8",
-      dataType: "json",
-      success: function(result){
-        callback({
-          success: true,
-          redirect_uri: result.redirect_uri
-        });
-      },
-      error: function(error) {
-        callback({
-          success: false,
-          redirect_uri: null,
-          error_message: error.responseJSON.error_message
-        });
-      }
+    type: "POST",
+    url: "/users/",
+    data: JSON.stringify(credentials),
+    contentType: "application/json; charset=utf-8",
+    dataType: "json",
+    success: function (result) {
+      callback({
+        success: true,
+        redirect_uri: result.redirect_uri
+      });
+    },
+    error: function (error) {
+      callback({
+        success: false,
+        redirect_uri: null,
+        error_message: error.responseJSON.error_message
+      });
+    }
   });
 }
 
@@ -126,23 +126,54 @@ function login(username, password, callback) {
   };
 
   $.ajax({
-      type: "POST",
-      url: "/users/login",
-      data: JSON.stringify(credentials),
-      contentType: "application/json; charset=utf-8",
-      dataType: "json",
-      success: function(result){
-        callback({
-          success: true,
-          redirect_uri: result.redirect_uri
-        });
-      },
-      error: function(error) {
-        callback({
-          success: false,
-          redirect_uri: null,
-          error_message: error.responseJSON.error_message
-        });
-      }
+    type: "POST",
+    url: "/users/login",
+    data: JSON.stringify(credentials),
+    contentType: "application/json; charset=utf-8",
+    dataType: "json",
+    success: function (result) {
+      callback({
+        success: true,
+        redirect_uri: result.redirect_uri
+      });
+    },
+    error: function (error) {
+      callback({
+        success: false,
+        redirect_uri: null,
+        error_message: error.responseJSON.error_message
+      });
+    }
+  });
+}
+
+
+function edit_profile(firstname, lastname, birthdate, bio, callback) {
+  var credentials = {
+    firstname: firstname,
+    lastname: lastname,
+    birthdate, birthdate,
+    bio, bio
+  };
+
+  $.ajax({
+    type: "POST",
+    url: "/users/edit",
+    data: JSON.stringify(credentials),
+    contentType: "application/json; charset=utf-8",
+    dataType: "json",
+    success: function (result) {
+      callback({
+        success: true,
+        redirect_uri: result.redirect_uri
+      });
+    },
+    error: function (error) {
+      callback({
+        success: false,
+        redirect_uri: null,
+        error_message: error.responseJSON.error_message
+      });
+    }
   });
 }

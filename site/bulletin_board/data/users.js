@@ -76,9 +76,9 @@ users.signup = (credentials, callback) => {
   }
 
   bcrypt.hash(credentials.password, saltRounds, (err, passwordHash) => {
-    var sql ='INSERT INTO users (username, passwordHash) VALUES (?, ?)';
-    var params =[credentials.username, passwordHash];
-    db.run(sql, params, function (err, result){
+    var sql = 'INSERT INTO users (username, passwordHash) VALUES (?, ?)';
+    var params = [credentials.username, passwordHash];
+    db.run(sql, params, function (err, result) {
       var success = false;
       var error_message = "";
       var user = { username: credentials.username }
@@ -125,6 +125,16 @@ users.get = (id, callback) => {
     callback(user);
   });
 };
+
+
+users.setProfile = (profile, user, callback) => {
+  var sql = "UPDATE Users SET firstname = ? , lastname = ? , birthdate = ? , bio = ? WHERE id = ?";
+  var params = [profile.firstname, profile.lastname, profile.birthdate, profile.bio, user.id];
+  db.run(sql, params, (err, result) => {
+    var success = !err;
+    callback(success)
+  })
+}
 
 // Retrieves a user profile by username 
 

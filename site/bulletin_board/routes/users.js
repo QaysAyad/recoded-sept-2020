@@ -84,11 +84,35 @@ router.post('/', (req, res, next) => {
   });
 });
 
-// get edit profile page 
+/*
+ * The "Edit profile" endpoint.
+ *
+ * {
+ *   firstname: string,
+ *   lastname: string,
+ *   birthdate: string,
+ *   bio: string,
+ * }
+ *
+ * {
+ *   success: boolean,
+ *   redirect_uri: string,
+ * }
+ */
+
+router.post('/edit', (req, res, next) => {
+  var profileInfo = req.body;
+  datasource.setProfile(profileInfo, req.user, (success) => {
+    res.send(success)
+  })
+});
+
+
+// EJS edit profile page 
 router.get('/edit', (req, res, next) => {
   datasource.profile(req.user.username, (user) => {
-    res.render('edit_profile', { user, user });
-  });
+    res.render('edit_profile', { user: user });
+  })
 });
 
 module.exports = router;
