@@ -9,10 +9,8 @@ var edit_success = $("#edit_message");
 var edit_danger = $("#edit_danger");
 
 
-if (edit_birthdate.val()) {
-    console.log(edit_birthdate.val());
-}
 
+// edit profile 
 edit_form.submit((event) => {
     var firstname = edit_firstname.val();
     var lastname = edit_lastname.val();

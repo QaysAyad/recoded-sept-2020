@@ -126,7 +126,7 @@ users.get = (id, callback) => {
   });
 };
 
-
+// set user profile into database
 users.setProfile = (profile, user, callback) => {
   var sql = "UPDATE Users SET firstname = ? , lastname = ? , birthdate = ? , bio = ? WHERE id = ?";
   var params = [profile.firstname, profile.lastname, profile.birthdate, profile.bio, user.id];
@@ -137,7 +137,6 @@ users.setProfile = (profile, user, callback) => {
 }
 
 // Retrieves a user profile by username 
-
 users.profile = (username, callback) => {
   db.get("SELECT * FROM Users WHERE username = ?", [username], (err, row) => {
     if (err || row == null) {
