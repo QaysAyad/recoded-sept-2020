@@ -126,4 +126,24 @@ users.get = (id, callback) => {
   });
 };
 
+// Retrieves a user profile by username 
+
+users.profile = (username, callback) => {
+  db.get("SELECT * FROM Users WHERE username = ?", [username], (err, row) => {
+    if (err || row == null) {
+      callback(null);
+      return;
+    }
+    var user = {
+      id: row.id,
+      username: row.username,
+      firstname: row.firstname,
+      lastname: row.lastname,
+      birthdate: row.birthdate,
+      bio: row.bio
+    };
+    callback(user);
+  });
+};
+
 module.exports = users;
