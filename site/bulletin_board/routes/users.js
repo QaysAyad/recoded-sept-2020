@@ -17,10 +17,10 @@ var datasource = require('../data/users.js')
  *   error_message: string
  * }
  */
-router.post('/login', function(req, res, next) {
+router.post('/login', function (req, res, next) {
   var credentials = req.body;
 
-  datasource.login(credentials, function(result) {
+  datasource.login(credentials, function (result) {
     if (!result || !result.success) {
       result = {
         success: false,
@@ -29,7 +29,7 @@ router.post('/login', function(req, res, next) {
       return res.status(403).send(result);
     }
 
-    req.login({ id: result.user.id, username: result.user.username }, function(err) {
+    req.login({ id: result.user.id, username: result.user.username }, function (err) {
       if (err) {
         result = {
           success: false,
@@ -73,7 +73,7 @@ router.post('/', (req, res, next) => {
       return res.status(400).send(result);
     }
 
-    req.login(result.user, function(err) {
+    req.login(result.user, function (err) {
       if (err) { return next(err); }
       result = {
         success: true,
@@ -81,6 +81,13 @@ router.post('/', (req, res, next) => {
       };
       res.send(result);
     });
+  });
+});
+
+// get edit profile page 
+router.get('/edit', (req, res, next) => {
+  datasource.profile(req.user.username, (user) => {
+    res.render('edit_profile', { user, user });
   });
 });
 
