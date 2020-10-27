@@ -21,10 +21,11 @@ posts.retrieve = (id, userId, callback) => {
       Posts.id AS id,
       Posts.title,
       Author.firstname || '  ' || Author.lastname AS author,
+      '/users/' || Author.username AS author_url,
       Posts.date,
       Posts.body AS body,
       PostUpvotes.post_id IS NOT NULL AS liked,
-      '/posts/' + Posts.id AS url
+      '/posts/' || Posts.id AS url
     FROM
       Posts
       INNER JOIN Users AS Author ON Posts.user_id = Author.id
@@ -43,9 +44,10 @@ posts.retrieve = (id, userId, callback) => {
       id: row.id,
       title: row.title,
       author: row.author,
+      author_url: row.author_url,
       date: row.date,
       liked: row.liked,
-      url: "/posts/" + id,
+      url: row.url,
       body: row.body,
     });
   });
@@ -70,7 +72,7 @@ posts.recent = (userId, callback) => {
       Author.firstname || '  ' || Author.lastname AS author,
       Posts.date,
       PostUpvotes.post_id IS NOT NULL AS liked,
-      '/posts/' + Posts.id AS url,
+      '/posts/' || Posts.id AS url
       substr(Posts.body, 0, 140) AS excerpt
     FROM
       Posts
@@ -116,7 +118,7 @@ posts.trending = (userId, callback) => {
       Author.firstname || '  ' || Author.lastname AS author,
       Posts.date,
       PostUpvotes.post_id IS NOT NULL AS liked,
-      '/posts/' + Posts.id AS url,
+      '/posts/' || Posts.id AS url
       substr(Posts.body, 0, 140) AS excerpt
     FROM
       Posts
