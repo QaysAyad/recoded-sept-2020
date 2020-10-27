@@ -86,4 +86,3 @@ create_user_form.on("submit", (event) => {
 
   event.preventDefault();
 });
-

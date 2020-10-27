@@ -114,15 +114,16 @@ router.put("/", (req, res, next) => {
 
 // EJS edit profile page
 router.get("/:username/edit", (req, res, next) => {
-  datasource.get(req.user.id, (user) => {
+  datasource.get_username(req.user.username, (user) => {
     res.render("edit_profile", { user: user });
   });
 });
 
 // EJS edit profile page
 router.get("/:username", (req, res, next) => {
+  const id = req.user.username == req.params.username ? "my_account" : null;
   datasource.get_username(req.params.username, (user) => {
-    res.render("profile", { user: user });
+    res.render("profile", { id: id, user: user });
   });
 });
 
