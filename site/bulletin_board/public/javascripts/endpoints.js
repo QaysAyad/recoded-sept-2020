@@ -1,4 +1,3 @@
-
 // Posts
 
 /**
@@ -17,7 +16,7 @@
 function create_post(title, message, callback) {
   var post = {
     title: title,
-    message: message
+    message: message,
   };
 
   $.ajax({
@@ -29,16 +28,16 @@ function create_post(title, message, callback) {
     success: function (result) {
       callback({
         success: true,
-        redirect_uri: result.redirect_uri
+        redirect_uri: result.redirect_uri,
       });
     },
     error: function (error) {
       callback({
         success: false,
         redirect_uri: null,
-        error_message: error.responseJSON.error_message
+        error_message: error.responseJSON.error_message,
       });
-    }
+    },
   });
 }
 
@@ -51,7 +50,7 @@ function create_post(title, message, callback) {
  */
 function upvote(id, state) {
   var vote = {
-    upvoted: state
+    upvoted: state,
   };
 
   $.ajax({
@@ -59,7 +58,7 @@ function upvote(id, state) {
     url: "/posts/" + id + "/upvotes",
     data: JSON.stringify(vote),
     contentType: "application/json; charset=utf-8",
-    dataType: "json"
+    dataType: "json",
   });
 }
 
@@ -81,7 +80,7 @@ function upvote(id, state) {
 function signup(username, password, callback) {
   var credentials = {
     username: username,
-    password: password
+    password: password,
   };
 
   $.ajax({
@@ -93,16 +92,16 @@ function signup(username, password, callback) {
     success: function (result) {
       callback({
         success: true,
-        redirect_uri: result.redirect_uri
+        redirect_uri: result.redirect_uri,
       });
     },
     error: function (error) {
       callback({
         success: false,
         redirect_uri: null,
-        error_message: error.responseJSON.error_message
+        error_message: error.responseJSON.error_message,
       });
-    }
+    },
   });
 }
 
@@ -122,7 +121,7 @@ function signup(username, password, callback) {
 function login(username, password, callback) {
   var credentials = {
     username: username,
-    password: password
+    password: password,
   };
 
   $.ajax({
@@ -134,46 +133,45 @@ function login(username, password, callback) {
     success: function (result) {
       callback({
         success: true,
-        redirect_uri: result.redirect_uri
+        redirect_uri: result.redirect_uri,
       });
     },
     error: function (error) {
       callback({
         success: false,
         redirect_uri: null,
-        error_message: error.responseJSON.error_message
+        error_message: error.responseJSON.error_message,
       });
-    }
+    },
   });
 }
 
-
-function edit_profile(firstname, lastname, birthdate, bio, callback) {
-  var credentials = {
-    firstname: firstname,
-    lastname: lastname,
-    birthdate, birthdate,
-    bio, bio
+function put_user(firstname, lastname, birthdate, bio, callback) {
+  const data = {
+    firstname,
+    lastname,
+    birthdate,
+    bio,
   };
 
   $.ajax({
-    type: "POST",
-    url: "/users/edit",
-    data: JSON.stringify(credentials),
+    type: "PUT",
+    url: "/users",
+    data: JSON.stringify(data),
     contentType: "application/json; charset=utf-8",
     dataType: "json",
     success: function (result) {
       callback({
         success: true,
-        redirect_uri: result.redirect_uri
+        redirect_uri: result.redirect_uri,
       });
     },
     error: function (error) {
       callback({
         success: false,
         redirect_uri: null,
-        error_message: error.responseJSON.error_message
+        error_message: error.responseJSON.error_message,
       });
-    }
+    },
   });
 }
