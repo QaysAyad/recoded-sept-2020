@@ -1,5 +1,5 @@
 <%- include('header', { title: 'Post' }); %>
-<%- include('nav_bar', { id: null }); %>
+<%- include('nav_bar', { id: null, user: user }); %>
 
 <!-- Page Content -->
 <div class="container py-3">
@@ -8,8 +8,10 @@
 
       <div class="post-preview">
         <h2 class="post-title">
-          <a data-postid="<%= post.id %>" id="thumbs_up_on" <% if (!post.liked) { %>style="display: none;"<% } %>><i class="fa fa-thumbs-up"></i></a>
-          <a data-postid="<%= post.id %>" id="thumbs_up_off" <% if (post.liked) { %>style="display: none;"<% } %>><i class="fa fa-thumbs-up" style="color: #DDD;" id="thumbs_up_off"></i></a>
+          <a data-postid="<%= post.id %>" id="thumbs_up_on" <% if (!post.liked) { %>style="display: none;" <% } %>><i
+              class="fa fa-thumbs-up"></i></a>
+          <a data-postid="<%= post.id %>" id="thumbs_up_off" <% if (post.liked) { %>style="display: none;" <% } %>><i
+              class="fa fa-thumbs-up" style="color: #DDD;" id="thumbs_up_off"></i></a>
           <%= post.title %>
         </h2>
 

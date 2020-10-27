@@ -1,31 +1,41 @@
-var express = require('express');
+var express = require("express");
 var router = express.Router();
 
-var datasource = require('../data/posts.js');
+var datasource = require("../data/posts.js");
 
 /** EJS: A list of the recent posts on the Bulletin Board. */
-router.get('/recent', (req, res, next) => {
+router.get("/recent", (req, res, next) => {
   datasource.recent(req.user.id, (posts) => {
-    res.render('post_list', { id: 'recent', title: 'Recent Posts', posts: posts });
+    res.render("post_list", {
+      id: "recent",
+      title: "Recent Posts",
+      user: req.user,
+      posts: posts,
+    });
   });
 });
 
 /** EJS: A list of the trending posts on the Bulletin Board. */
-router.get('/trending', (req, res, next) => {
+router.get("/trending", (req, res, next) => {
   datasource.trending(req.user.id, (posts) => {
-    res.render('post_list', { id: 'trending', title: 'Trending Posts', posts: posts });
+    res.render("post_list", {
+      id: "trending",
+      title: "Trending Posts",
+      user: req.user,
+      posts: posts,
+    });
   });
 });
 
 /** EJS: Form for creating a new post on the Bulletin Board. */
-router.get('/create', (req, res, next) => {
-  res.render('create_post');
+router.get("/create", (req, res, next) => {
+  res.render("create_post", { user: req.user });
 });
 
 /** EJS: The detailed view of a single post. */
-router.get('/:id', (req, res, next) => {
-  datasource.retrieve(req.params['id'], req.user.id, (post) => {
-    res.render('view_post', { title: post.title, post: post });
+router.get("/:id", (req, res, next) => {
+  datasource.retrieve(req.params["id"], req.user.id, (post) => {
+    res.render("view_post", { title: post.title, user: req.user, post: post });
   });
 });
 
@@ -43,7 +53,7 @@ router.get('/:id', (req, res, next) => {
  *   error_message: string
  * }
  */
-router.post('/', function(req, res, next) {
+router.post("/", function (req, res, next) {
   var post = req.body;
 
   datasource.create(post, req.user, (result) => {
@@ -53,7 +63,7 @@ router.post('/', function(req, res, next) {
     var result = {
       success: result.success,
       redirect_uri: "/posts/" + result.post_id,
-      error_message: result.error_message
+      error_message: result.error_message,
     };
     res.send(result);
   });
@@ -66,10 +76,10 @@ router.post('/', function(req, res, next) {
  *   upvoted: boolean
  * }
  */
-router.post('/:id/upvotes/', (req, res, next) => {
+router.post("/:id/upvotes/", (req, res, next) => {
   var vote = req.body;
 
-  datasource.upvote(req.params['id'], req.user, vote, () => {
+  datasource.upvote(req.params["id"], req.user, vote, () => {
     res.send();
   });
 });

@@ -1,12 +1,13 @@
 <%- include('header', { title: 'Edit profile' }); %>
-<%- include('nav_bar', { id: 'null' }); %>
+<%- include('nav_bar', { id: 'null', user: user }); %>
 
 <div class="container py-3">
     <div class="row">
         <div class="col-lg-8 col-md-10 mx-auto">
             <div class="card">
                 <div class="card-body">
-                    <div class="p-3 mb-2 bg-success text-white" style="display: none;" id="edit_message">Successfuly updated</div>
+                    <div class="p-3 mb-2 bg-success text-white" style="display: none;" id="edit_message">Successfuly
+                        updated</div>
                     <div class="p-3 mb-2 bg-danger text-white" style="display: none;" id="edit_danger">Error</div>
                     <h5 class="card-title">Edit Profile</h5>
                     <form id="edit_form">
@@ -40,7 +41,8 @@
                         <div class="form-group row">
                             <label for="inputbirthdate" class="col-sm-2 col-form-label">Birthdate</label>
                             <div class="col-sm-10">
-                                <input type="date" name="birthdate" class="form-control" value="<%=user.birthdate%>"
+                                <input type="date" name="birthdate" class="form-control"
+                                    value=<%=user.birthdate ? user.birthdate.toISOString().split("T")[0] : ""%>
                                     id="inputbirthdate">
                             </div>
                         </div>
