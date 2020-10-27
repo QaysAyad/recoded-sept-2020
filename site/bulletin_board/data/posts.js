@@ -1,7 +1,7 @@
-var sqlite3 = require('sqlite3');
-var db = new sqlite3.Database('./data/database.db');
+var sqlite3 = require("sqlite3");
+var db = new sqlite3.Database("./data/database.db");
 
-var posts = {}
+var posts = {};
 
 /**
  * Retrieve a single post.
@@ -20,7 +20,7 @@ posts.retrieve = (id, userId, callback) => {
     SELECT
       Posts.id AS id,
       Posts.title,
-      Author.username AS author,
+      Author.firstname || '  ' || Author.lastname AS author,
       Posts.date,
       Posts.body AS body,
       PostUpvotes.post_id IS NOT NULL AS liked,
@@ -34,7 +34,7 @@ posts.retrieve = (id, userId, callback) => {
     ORDER BY
       date DESC
   `;
-  db.get(sql, [ userId, id ], (err, row) => {
+  db.get(sql, [userId, id], (err, row) => {
     if (err || !row) {
       callback(null);
       return;
@@ -42,11 +42,11 @@ posts.retrieve = (id, userId, callback) => {
     callback({
       id: row.id,
       title: row.title,
-      author: row.user_id,
+      author: row.author,
       date: row.date,
       liked: row.liked,
       url: "/posts/" + id,
-      body: row.body
+      body: row.body,
     });
   });
 };
@@ -67,7 +67,7 @@ posts.recent = (userId, callback) => {
     SELECT
       Posts.id AS id,
       Posts.title,
-      Author.username AS author,
+      Author.firstname || '  ' || Author.lastname AS author,
       Posts.date,
       PostUpvotes.post_id IS NOT NULL AS liked,
       '/posts/' + Posts.id AS url,
@@ -80,7 +80,7 @@ posts.recent = (userId, callback) => {
       Posts.id DESC
     LIMIT 100
   `;
-  db.all(sql, [ userId ], (err, rows) => {
+  db.all(sql, [userId], (err, rows) => {
     if (err) {
       callback([]);
       return;
@@ -106,13 +106,14 @@ posts.trending = (userId, callback) => {
   var secondsPerMinute = 60;
   var minutesPerHour = 60;
   var hoursPerDay = 24;
-  var thirtyDaysInSeconds = 30 * hoursPerDay * minutesPerHour * secondsPerMinute;
+  var thirtyDaysInSeconds =
+    30 * hoursPerDay * minutesPerHour * secondsPerMinute;
   var thirtyDaysAgo = timestamp - thirtyDaysInSeconds;
   var sql = `
     SELECT
       Posts.id AS id,
       Posts.title,
-      Author.username AS author,
+      Author.firstname || '  ' || Author.lastname AS author,
       Posts.date,
       PostUpvotes.post_id IS NOT NULL AS liked,
       '/posts/' + Posts.id AS url,
@@ -127,7 +128,7 @@ posts.trending = (userId, callback) => {
       Posts.votes DESC
     LIMIT 100
   `;
-  db.all(sql, [ userId, thirtyDaysAgo ], (err, rows) => {
+  db.all(sql, [userId, thirtyDaysAgo], (err, rows) => {
     if (err) {
       callback([]);
       return;
@@ -162,17 +163,32 @@ posts.create = (post, user, callback) => {
   if (!success) {
     var result = {
       success: false,
-      error_message: error_message
+      error_message: error_message,
     };
     return callback(result);
   }
 
-  var months = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ];
+  var months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
   var date = new Date();
-  var sql ='INSERT INTO posts (title, body, date, user_id, timestamp) VALUES (?, ?, ?, ?, ?)'
-  var now = months[date.getMonth()] + " " + date.getDate() + ", " + date.getFullYear();
+  var sql =
+    "INSERT INTO posts (title, body, date, user_id, timestamp) VALUES (?, ?, ?, ?, ?)";
+  var now =
+    months[date.getMonth()] + " " + date.getDate() + ", " + date.getFullYear();
   var timestamp = Math.round(new Date().getTime() / 1000);
-  var params =[post.title, post.message, now, user.id, timestamp]
+  var params = [post.title, post.message, now, user.id, timestamp];
   db.run(sql, params, function (err, result) {
     var success = !err;
     var result = {
@@ -197,24 +213,24 @@ posts.upvote = (id, user, vote, callback) => {
   if (!success) {
     var result = {
       success: false,
-      error_message: error_message
+      error_message: error_message,
     };
     return callback(result);
   }
 
   var sql;
   if (vote) {
-    sql ='INSERT INTO PostUpvotes (post_id, user_id) VALUES (?, ?)'
+    sql = "INSERT INTO PostUpvotes (post_id, user_id) VALUES (?, ?)";
   } else {
-    sql ='DELETE FROM PostUpvotes WHERE post_id = ? AND user_id = ?'
+    sql = "DELETE FROM PostUpvotes WHERE post_id = ? AND user_id = ?";
   }
-  var params =[id, user.id]
+  var params = [id, user.id];
   db.run(sql, params, function (err, result) {
     if (this.changes != 1) {
       return callback();
     }
     var operator = vote ? "+" : "-";
-    sql ='UPDATE Posts SET vote = vote ' + operator + ' 1 WHERE post_id = ?'
+    sql = "UPDATE Posts SET vote = vote " + operator + " 1 WHERE post_id = ?";
     db.run(sql, [id], function (err, result) {
       callback();
     });
@@ -222,4 +238,3 @@ posts.upvote = (id, user, vote, callback) => {
 };
 
 module.exports = posts;
-
