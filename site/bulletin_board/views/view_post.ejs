@@ -16,7 +16,7 @@
         </h2>
 
         <p class="post-meta">Posted by
-          <%= post.author %>
+          <a href=<%= post.author_url %>><%= post.author %></a>
           on <%= post.date %></p>
         <p class="post-subtitle">
           <%= post.body %>
