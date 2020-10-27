@@ -1,7 +1,7 @@
-var express = require('express');
+var express = require("express");
 var router = express.Router();
 
-var datasource = require('../data/users.js')
+var datasource = require("../data/users.js");
 
 /**
  * The "Login" endpoint.
@@ -17,31 +17,33 @@ var datasource = require('../data/users.js')
  *   error_message: string
  * }
  */
-router.post('/login', function (req, res, next) {
+router.post("/login", function (req, res, next) {
   var credentials = req.body;
 
   datasource.login(credentials, function (result) {
     if (!result || !result.success) {
       result = {
         success: false,
-        error_message: result ? result.error_message : "Database error"
-      }
+        error_message: result ? result.error_message : "Database error",
+      };
       return res.status(403).send(result);
     }
 
-    req.login({ id: result.user.id, username: result.user.username }, function (err) {
+    req.login({ id: result.user.id, username: result.user.username }, function (
+      err
+    ) {
       if (err) {
         result = {
           success: false,
-          error_message: err
-        }
+          error_message: err,
+        };
         return res.status(403).send(result);
       }
 
       result = {
         success: true,
-        redirect_uri: "/posts/recent"
-      }
+        redirect_uri: "/posts/recent",
+      };
       return res.send(result);
     });
   });
@@ -61,23 +63,25 @@ router.post('/login', function (req, res, next) {
  *   error_message: string
  * }
  */
-router.post('/', (req, res, next) => {
+router.post("/", (req, res, next) => {
   var credentials = req.body;
 
   datasource.signup(credentials, (result) => {
     if (!result.success) {
       result = {
         success: false,
-        error_message: result.error_message
-      }
+        error_message: result.error_message,
+      };
       return res.status(400).send(result);
     }
 
     req.login(result.user, function (err) {
-      if (err) { return next(err); }
+      if (err) {
+        return next(err);
+      }
       result = {
         success: true,
-        redirect_uri: "/posts/recent"
+        redirect_uri: "/posts/recent",
       };
       res.send(result);
     });
@@ -100,19 +104,26 @@ router.post('/', (req, res, next) => {
  * }
  */
 
-router.post('/edit', (req, res, next) => {
-  var profileInfo = req.body;
-  datasource.setProfile(profileInfo, req.user, (success) => {
-    res.send(success)
-  })
+router.put("/", (req, res, next) => {
+  const user = req.user;
+  const profileInfo = req.body;
+  datasource.put(profileInfo, user, (success) => {
+    res.send(success);
+  });
 });
 
+// EJS edit profile page
+router.get("/:username/edit", (req, res, next) => {
+  datasource.get(req.user.id, (user) => {
+    res.render("edit_profile", { user: user });
+  });
+});
 
-// EJS edit profile page 
-router.get('/edit', (req, res, next) => {
-  datasource.profile(req.user.username, (user) => {
-    res.render('edit_profile', { user: user });
-  })
+// EJS edit profile page
+router.get("/:username", (req, res, next) => {
+  datasource.get_username(req.params.username, (user) => {
+    res.render("profile", { user: user });
+  });
 });
 
 module.exports = router;
