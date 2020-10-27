@@ -8,28 +8,26 @@ var edit_bio = $("#inputbio");
 var edit_success = $("#edit_message");
 var edit_danger = $("#edit_danger");
 
-
-
-// edit profile 
+// edit profile
 edit_form.submit((event) => {
-    var firstname = edit_firstname.val();
-    var lastname = edit_lastname.val();
-    var birthdate = edit_birthdate.val();
-    var bio = edit_bio.val();
+  var firstname = edit_firstname.val();
+  var lastname = edit_lastname.val();
+  var birthdate = new Date(edit_birthdate.val()).getTime();
+  var bio = edit_bio.val();
 
-    edit_profile(firstname, lastname, birthdate, bio, function (result) {
-        if (result) {
-            edit_success.show();
-            setTimeout(function () {
-                edit_success.hide();
-            }, 3000)
-            return;
-        }
-        edit_danger.show();
-        setTimeout(function () {
-            edit_danger.hide();
-        }, 3000)
-    });
+  put_user(firstname, lastname, birthdate, bio, function (result) {
+    if (result) {
+      edit_success.show();
+      setTimeout(function () {
+        edit_success.hide();
+      }, 3000);
+      return;
+    }
+    edit_danger.show();
+    setTimeout(function () {
+      edit_danger.hide();
+    }, 3000);
+  });
 
-    event.preventDefault();
+  event.preventDefault();
 });
