@@ -72,7 +72,7 @@ posts.recent = (userId, callback) => {
       Author.firstname || '  ' || Author.lastname AS author,
       Posts.date,
       PostUpvotes.post_id IS NOT NULL AS liked,
-      '/posts/' || Posts.id AS url
+      '/posts/' || Posts.id AS url,
       substr(Posts.body, 0, 140) AS excerpt
     FROM
       Posts
@@ -118,7 +118,7 @@ posts.trending = (userId, callback) => {
       Author.firstname || '  ' || Author.lastname AS author,
       Posts.date,
       PostUpvotes.post_id IS NOT NULL AS liked,
-      '/posts/' || Posts.id AS url
+      '/posts/' || Posts.id AS url,
       substr(Posts.body, 0, 140) AS excerpt
     FROM
       Posts
