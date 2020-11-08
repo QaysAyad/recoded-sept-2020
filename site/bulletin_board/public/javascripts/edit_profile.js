@@ -31,3 +31,45 @@ edit_form.submit((event) => {
 
   event.preventDefault();
 });
+
+var password_modal = $('#password_modal');
+var password_form = $("#password_form");
+var input_current_password = $("#input_current_password");
+var input_new_password = $("#input_new_password");
+var input_confirm_new_password = $("#input_confirm_new_password");
+var password_danger = $("#password_danger");
+
+
+// edit password 
+password_form.submit((event) => {
+  var current_password = input_current_password.val();
+  var new_password = input_new_password.val();
+  var confirm_new_password = input_confirm_new_password.val();
+  if (new_password !== confirm_new_password) {
+    show_password_error('Make sure to write the new passwords fileds match')
+  } else {
+    change_password(current_password, new_password, function (result) {
+      if (result.success) {
+        password_form.trigger("reset");
+        password_modal.modal('hide')
+        edit_success.show();
+        setTimeout(function () {
+          edit_success.hide();
+        }, 3000);
+        return;
+      }
+      show_password_error(result.error_message)
+ 
+    });
+  }
+  event.preventDefault();
+});
+
+function show_password_error(text) {
+  password_danger.text(text);
+  password_danger.show();
+  setTimeout(function () {
+    password_danger.hide();
+    password_danger.text('Error');
+  }, 3000);
+}
