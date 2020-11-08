@@ -126,4 +126,21 @@ users.get = (id, callback) => {
   });
 };
 
+// set user profile into database
+users.put = (profile, user, callback) => {
+  var sql =
+    "UPDATE Users SET firstname = ? , lastname = ? , birthdate = ? , bio = ? WHERE id = ?";
+  var params = [
+    profile.firstname,
+    profile.lastname,
+    profile.birthdate,
+    profile.bio,
+    user.id,
+  ];
+  db.run(sql, params, (err, result) => {
+    var success = !err;
+    callback(success);
+  });
+};
+
 module.exports = users;

@@ -84,4 +84,27 @@ router.post('/', (req, res, next) => {
   });
 });
 
+/*
+ * The "Edit profile" endpoint.
+ *
+ * {
+ *   firstname: string,
+ *   lastname: string,
+ *   birthdate: Date,
+ *   bio: string,
+ * }
+ *
+ * {
+ *   success: boolean,
+ *   redirect_uri: string,
+ * }
+ */
+
+router.put("/", (req, res, next) => {
+  const user = req.user;
+  const profileInfo = req.body;
+  datasource.put(profileInfo, user, (success) => {
+    res.send(success);
+  });
+});
 module.exports = router;
