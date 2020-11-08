@@ -16,7 +16,7 @@ edit_form.submit((event) => {
   var bio = edit_bio.val();
 
   put_user(firstname, lastname, birthdate, bio, function (result) {
-    if (result) {
+    if (result.success) {
       edit_success.show();
       setTimeout(function () {
         edit_success.hide();

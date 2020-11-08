@@ -126,7 +126,7 @@ users.get = (id, callback) => {
   });
 };
 
-// set user profile into database
+// update user profile into database
 users.put = (profile, user, callback) => {
   var sql =
     "UPDATE Users SET firstname = ? , lastname = ? , birthdate = ? , bio = ? WHERE id = ?";
@@ -138,11 +138,23 @@ users.put = (profile, user, callback) => {
     user.id,
   ];
   db.run(sql, params, (err, result) => {
-    var success = !err;
-    callback(success);
+    var success = false;
+    var error_message = "";
+    
+    if (err) {
+      error_message = "Something went wrong";
+    } else {
+      success = true;
+    }
+    var result = {
+      success: success,
+      error_message: error_message,
+    };
+    return callback(result);
   });
 };
 
+// get user profile using usename
 users.get_username = (username, callback) => {
   db.get(
     "SELECT username, firstname, lastname, birthdate, bio FROM Users WHERE username = ?",

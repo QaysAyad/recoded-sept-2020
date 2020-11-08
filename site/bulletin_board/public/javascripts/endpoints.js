@@ -163,8 +163,8 @@ function put_user(firstname, lastname, birthdate, bio, callback) {
     dataType: "json",
     success: function (result) {
       callback({
-        success: true,
-        redirect_uri: result.redirect_uri,
+        success: result.success,
+        redirect_uri: null,
       });
     },
     error: function (error) {
