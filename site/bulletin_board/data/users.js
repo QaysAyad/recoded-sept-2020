@@ -143,4 +143,25 @@ users.put = (profile, user, callback) => {
   });
 };
 
+users.get_username = (username, callback) => {
+  db.get(
+    "SELECT username, firstname, lastname, birthdate, bio FROM Users WHERE username = ?",
+    [username],
+    (err, row) => {
+      if (err) {
+        callback(null);
+        return;
+      }
+      var user = {
+        id: row.id,
+        username: row.username,
+        firstname: row.firstname,
+        lastname: row.lastname,
+        birthdate: row.birthdate ? new Date(row.birthdate) : undefined,
+        bio: row.bio,
+      };
+      callback(user);
+    }
+  );
+};
 module.exports = users;
