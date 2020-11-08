@@ -107,4 +107,22 @@ router.put("/", (req, res, next) => {
     res.send(success);
   });
 });
+
+// EJS profile page
+router.get("/:username", (req, res, next) => {
+  const id = req.user.username == req.params.username ? "my_account" : null;
+  datasource.get_username(req.params.username, (user) => {
+    res.render("profile", { id: id, user: user });
+  });
+});
+
+// EJS edit profile page
+router.get("/:username/edit", (req, res, next) => {
+  datasource.get_username(req.user.username, (user) => {
+    res.render("edit_profile", { user: user });
+  });
+});
+
+
+
 module.exports = router;
