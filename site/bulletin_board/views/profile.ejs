@@ -1,0 +1,50 @@
+<%- include('header', { title: 'Edit profile' }); %>
+<%- include('nav_bar', { id: id }); %>
+
+<div class="container py-3">
+    <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+            <div class="card">
+                <div class="card-body">
+                    <% if (id == "my_account") { %>
+                    <a class="nav-link btn btn-primary float-right" href=<%= `/users/${user.username}/edit` %>>Edit
+                        Profile</a>
+                    <% } %>
+                    <h5 class="card-title clearfix">Profile</h5>
+                    <div class="row">
+                        <div class="col-sm-3">Username:</div>
+                        <div class="col-sm-9">
+                            <strong><%= user.username %></strong>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3">First name:</div>
+                        <div class="col-sm-9">
+                            <strong><%= user.firstname %></strong>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3">Last name:</div>
+                        <div class="col-sm-9">
+                            <strong><%= user.lastname %></strong>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3">Birthdate:</div>
+                        <div class="col-sm-9">
+                            <strong><%= user.birthdate ? user.birthdate.toISOString().split("T")[0]: "Empty" %></strong>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3">Bio:</div>
+                        <div class="col-sm-9">
+                            <strong><%= user.bio %></strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('footer', { javascript_uri: '/javascripts/edit_profile.js' }); %>
