@@ -100,7 +100,70 @@ users.signup = (credentials, callback) => {
     });
   });
 };
-
+/**
+ * Change user password.
+ *
+ * The callback takes a single parameter:
+ * {
+ *   success: boolean,
+ *   error_message: string,
+ *   user: user { id, username }
+ * }
+ * error_message will always be defined when success is false.
+ * user will always be defined when success is true.
+ */
+users.change_password = (credentials, callback) => {
+  if (credentials.new_password.length < 3) {
+    var result = {
+      success: false,
+      error_message: "Your new password is not long enough (3 character minimum)!"
+    };
+    return callback(result);
+  }
+  db.get("SELECT * FROM Users WHERE id = ?", [credentials.id], (err, user_row) => {
+    if (err) {
+      var result = {
+        success: false,
+        error_message: err
+      };
+      return callback(result);
+    }
+    if (!user_row) {
+      var result = {
+        success: false,
+        error_message: "We don't recognize your id."
+      };
+      return callback(result);
+    }
+    bcrypt.compare(credentials.current_password, user_row.passwordHash, (err, passwords_match) => {
+      if (!passwords_match) {
+        var result = {
+          success: false,
+          error_message: "You entered a wrong password"
+        };
+        return callback(result);
+      }
+      bcrypt.hash(credentials.new_password, saltRounds, (err, passwordHash) => {
+        var sql ='UPDATE users SET passwordHash = ? WHERE id = ?';
+        var params =[ passwordHash, credentials.id ];
+        db.run(sql, params, function (err, result){
+          var success = false;
+          var error_message = "";
+          if (err) {
+            error_message = "Something went wrong";
+          } else {
+            success = true;
+          }
+          var result = {
+            success: success,
+            error_message: error_message,
+          };
+          return callback(result);
+        });
+      });
+    });
+  });
+};
 /**
  * Retrieves a user by id.
  *
@@ -126,4 +189,54 @@ users.get = (id, callback) => {
   });
 };
 
+// update user profile into database
+users.put = (profile, user, callback) => {
+  var sql =
+    "UPDATE Users SET firstname = ? , lastname = ? , birthdate = ? , bio = ? WHERE id = ?";
+  var params = [
+    profile.firstname,
+    profile.lastname,
+    profile.birthdate,
+    profile.bio,
+    user.id,
+  ];
+  db.run(sql, params, (err, result) => {
+    var success = false;
+    var error_message = "";
+
+    if (err) {
+      error_message = "Something went wrong";
+    } else {
+      success = true;
+    }
+    var result = {
+      success: success,
+      error_message: error_message,
+    };
+    return callback(result);
+  });
+};
+
+// get user profile using usename
+users.get_username = (username, callback) => {
+  db.get(
+    "SELECT username, firstname, lastname, birthdate, bio FROM Users WHERE username = ?",
+    [username],
+    (err, row) => {
+      if (err) {
+        callback(null);
+        return;
+      }
+      var user = {
+        id: row.id,
+        username: row.username,
+        firstname: row.firstname,
+        lastname: row.lastname,
+        birthdate: row.birthdate ? new Date(row.birthdate) : undefined,
+        bio: row.bio,
+      };
+      callback(user);
+    }
+  );
+};
 module.exports = users;

@@ -146,3 +146,73 @@ function login(username, password, callback) {
       }
   });
 }
+/**
+ * Creates a new User on the website with the given username and password.
+ *
+ * The callback takes a single parameter:
+ * {
+ *   success: boolean,
+ *   redirect_uri: string,
+ *   error_message: string
+ * }
+ * redirect_uri will always be defined when success is true.
+ * error_message will always be defined when success is false.
+ * redirect_uri must only be used when success is true.
+ */
+function change_password(current_password, new_password, callback) {
+  var passwords = {
+    current_password: current_password,
+    new_password: new_password
+  };
+
+  $.ajax({
+      type: "PUT",
+      url: "/users/password",
+      data: JSON.stringify(passwords),
+      contentType: "application/json; charset=utf-8",
+      dataType: "json",
+      success: function(result){
+        callback({
+          success: true,
+          redirect_uri: result.redirect_uri
+        });
+      },
+      error: function(error) {
+        callback({
+          success: false,
+          redirect_uri: null,
+          error_message: error.responseJSON.error_message
+        });
+      }
+  });
+}
+
+function put_user(firstname, lastname, birthdate, bio, callback) {
+  const data = {
+    firstname,
+    lastname,
+    birthdate,
+    bio,
+  };
+
+  $.ajax({
+    type: "PUT",
+    url: "/users",
+    data: JSON.stringify(data),
+    contentType: "application/json; charset=utf-8",
+    dataType: "json",
+    success: function (result) {
+      callback({
+        success: result.success,
+        redirect_uri: null,
+      });
+    },
+    error: function (error) {
+      callback({
+        success: false,
+        redirect_uri: null,
+        error_message: error.responseJSON.error_message,
+      });
+    },
+  });
+}

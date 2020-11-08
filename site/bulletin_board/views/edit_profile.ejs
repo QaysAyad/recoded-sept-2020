@@ -1,0 +1,114 @@
+<%- include('header', { title: 'Edit profile' }); %>
+<%- include('nav_bar', { id: 'my_account', user: user }); %>
+<!-- Change Password Modal -->
+<div class="modal fade" id="password_modal" tabindex="-1" aria-labelledby="password_modal_label" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="password_modal_label">Change passwrod</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form id="password_form">
+            <div class="modal-body">
+                <div class="p-3 mb-2 bg-danger text-white" style="display: none;" id="password_danger">Error</div>
+                <div class="form-group row">
+                    <label for="input_current_password" class="col-sm-4 col-form-label">Current password</label>
+                    <div class="col-sm-8">
+                        <input type="password" name="password" class="form-control" id="input_current_password" 
+                            placeholder="Current password" required>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="input_new_password" class="col-sm-4 col-form-label">New password</label>
+                    <div class="col-sm-8">
+                        <input type="password" name="new_password" class="form-control" id="input_new_password"
+                            placeholder="New password" required>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="input_confirm_new_password" class="col-sm-4 col-form-label">Confirm new password</label>
+                    <div class="col-sm-8">
+                        <input type="password" name="confirm_new_password" class="form-control" id="input_confirm_new_password"
+                            placeholder="Confirm new password" required>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button href="#" type="submit" class="btn btn-primary">Save</button>
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+<div class="container py-3">
+    <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+            <div class="card">
+                <div class="card-body">
+                    <div class="p-3 mb-2 bg-success text-white" style="display: none;" id="edit_message">Successfuly
+                        updated</div>
+                    <div class="p-3 mb-2 bg-danger text-white" style="display: none;" id="edit_danger">Error</div>
+                    <h5 class="card-title">Edit Profile</h5>
+                    <form id="edit_form">
+                        <div class="form-group row">
+                            <label for="staticUsername" class="col-sm-2 col-form-label">Username</label>
+                            <div class="col-sm-10">
+                                <input type="text" readonly class="form-control-plaintext" id="staticUsername"
+                                    value="<%= user.username %>">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="inputfirstname" class="col-sm-2 col-form-label">First name</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="firstname" class="form-control" id="inputfirstname"
+                                    value="<%= user.firstname %>" placeholder="First name">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="inputlastname" class="col-sm-2 col-form-label">Last name</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="lastname" class="form-control" id="inputlastname"
+                                    value="<%= user.lastname %>" placeholder="Last name">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label">Password</label>
+                            <div class="col-sm-10 align-middle">
+                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#password_modal">
+                                    Change password
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="inputbirthdate" class="col-sm-2 col-form-label">Birthdate</label>
+                            <div class="col-sm-10">
+                                <input type="date" name="birthdate" class="form-control" id="inputbirthdate"
+                                    value=<%=user.birthdate ? user.birthdate.toISOString().split("T")[0] : ""%>>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label">Bio</label>
+                            <div class="col-sm-10">
+                                <textarea class="form-control" id="inputbio" placeholder="About me"
+                                    rows="3"><%=user.bio%></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-sm-10"></div>
+                            <div class="col-sm-2">
+                                <button href="#" type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('footer', { javascript_uri: '/javascripts/edit_profile.js' }); %>

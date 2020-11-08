@@ -6,26 +6,26 @@ var datasource = require('../data/posts.js');
 /** EJS: A list of the recent posts on the Bulletin Board. */
 router.get('/recent', (req, res, next) => {
   datasource.recent(req.user.id, (posts) => {
-    res.render('post_list', { id: 'recent', title: 'Recent Posts', posts: posts });
+    res.render("post_list", { id: "recent", title: "Recent Posts", user: req.user, posts: posts});
   });
 });
 
 /** EJS: A list of the trending posts on the Bulletin Board. */
 router.get('/trending', (req, res, next) => {
   datasource.trending(req.user.id, (posts) => {
-    res.render('post_list', { id: 'trending', title: 'Trending Posts', posts: posts });
+    res.render("post_list", { id: "trending", title: "Trending Posts", user: req.user, posts: posts});
   });
 });
 
 /** EJS: Form for creating a new post on the Bulletin Board. */
 router.get('/create', (req, res, next) => {
-  res.render('create_post');
+  res.render("create_post", { user: req.user });
 });
 
 /** EJS: The detailed view of a single post. */
 router.get('/:id', (req, res, next) => {
   datasource.retrieve(req.params['id'], req.user.id, (post) => {
-    res.render('view_post', { title: post.title, post: post });
+    res.render("view_post", { title: post.title, user: req.user, post: post });
   });
 });
 
