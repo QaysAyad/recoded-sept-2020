@@ -108,6 +108,45 @@ router.put("/", (req, res, next) => {
   });
 });
 
+/*
+ * The "Change password" endpoint.
+ *
+ * {
+ *   current_password: string,
+ *   new_password: string
+ * }
+ *
+ * {
+ *   success: boolean,
+ *   redirect_uri: string,
+ * }
+ */
+
+router.put("/password", (req, res, next) => {
+  const user = req.user;
+  const passwords = req.body;
+  const credentials = {
+    id: user.id,
+    current_password: passwords.current_password,
+    new_password: passwords.new_password
+  };
+  datasource.change_password(credentials, (result) => {
+    console.log(result);
+    if (!result || !result.success) {
+      result = {
+        success: false,
+        error_message: result.error_message ? result.error_message : "Database error"
+      }
+      return res.status(403).send(result);
+    }
+    result = {
+      success: true,
+      redirect_uri: null
+    }
+    return res.send(result);
+  });
+});
+
 // EJS profile page
 router.get("/:username", (req, res, next) => {
   const id = req.user.username == req.params.username ? "my_account" : null;
