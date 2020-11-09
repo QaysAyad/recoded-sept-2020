@@ -42,8 +42,7 @@ posts.retrieve = (id, userId, callback) => {
     callback({
       id: row.id,
       title: row.title,
-      author: row.user_id,
-      date: row.date,
+      author: row.author,
       liked: row.liked,
       url: "/posts/" + id,
       body: row.body
