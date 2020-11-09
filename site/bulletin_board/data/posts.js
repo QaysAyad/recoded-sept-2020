@@ -20,8 +20,8 @@ posts.retrieve = (id, userId, callback) => {
     SELECT
       Posts.id AS id,
       Posts.title,
+      Posts.timestamp,
       Author.username AS author,
-      Posts.date,
       Posts.body AS body,
       PostUpvotes.post_id IS NOT NULL AS liked,
       '/posts/' + Posts.id AS url
@@ -32,7 +32,7 @@ posts.retrieve = (id, userId, callback) => {
     WHERE
       Posts.id = ?
     ORDER BY
-      date DESC
+      timestamp DESC
   `;
   db.get(sql, [ userId, id ], (err, row) => {
     if (err || !row) {
@@ -45,7 +45,8 @@ posts.retrieve = (id, userId, callback) => {
       author: row.author,
       liked: row.liked,
       url: "/posts/" + id,
-      body: row.body
+      body: row.body,
+      timestamp: row.timestamp ? new Date(row.timestamp) : undefined,
     });
   });
 };
@@ -66,8 +67,8 @@ posts.recent = (userId, callback) => {
     SELECT
       Posts.id AS id,
       Posts.title,
+      Posts.timestamp,
       Author.username AS author,
-      Posts.date,
       PostUpvotes.post_id IS NOT NULL AS liked,
       '/posts/' + Posts.id AS url,
       substr(Posts.body, 0, 140) AS excerpt
@@ -84,6 +85,7 @@ posts.recent = (userId, callback) => {
       callback([]);
       return;
     }
+    rows.forEach(e => e.timestamp = e.timestamp ? new Date(e.timestamp) : undefined);
     callback(rows);
   });
 };
@@ -111,8 +113,8 @@ posts.trending = (userId, callback) => {
     SELECT
       Posts.id AS id,
       Posts.title,
+      Posts.timestamp,
       Author.username AS author,
-      Posts.date,
       PostUpvotes.post_id IS NOT NULL AS liked,
       '/posts/' + Posts.id AS url,
       substr(Posts.body, 0, 140) AS excerpt
@@ -131,6 +133,7 @@ posts.trending = (userId, callback) => {
       callback([]);
       return;
     }
+    rows.forEach(e => e.timestamp = e.timestamp ? new Date(e.timestamp) : undefined);
     callback(rows);
   });
 };
@@ -166,12 +169,12 @@ posts.create = (post, user, callback) => {
     return callback(result);
   }
 
-  var months = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ];
-  var date = new Date();
-  var sql ='INSERT INTO posts (title, body, date, user_id, timestamp) VALUES (?, ?, ?, ?, ?)'
-  var now = months[date.getMonth()] + " " + date.getDate() + ", " + date.getFullYear();
-  var timestamp = Math.round(new Date().getTime() / 1000);
-  var params =[post.title, post.message, now, user.id, timestamp]
+  // var months = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ];
+  // var date = new Date();
+  var sql ='INSERT INTO posts (title, body, user_id, timestamp) VALUES (?, ?,  ?, ?)'
+  // var now = months[date.getMonth()] + " " + date.getDate() + ", " + date.getFullYear();
+  var timestamp = new Date().getTime();
+  var params =[post.title, post.message, user.id, timestamp]
   db.run(sql, params, function (err, result) {
     var success = !err;
     var result = {
