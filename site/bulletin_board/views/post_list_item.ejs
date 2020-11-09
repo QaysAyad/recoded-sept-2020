@@ -9,7 +9,7 @@
     <% } %>
     Posted by
     <%= post.author %>
-    on <%= post.date %></p>
+    on <%= post.timestamp.toLocaleDateString() %></p>
     <span class="post-subtitle">
       <%= post.excerpt %>
     </span>

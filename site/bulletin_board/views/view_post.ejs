@@ -15,7 +15,7 @@
 
         <p class="post-meta">Posted by
           <%= post.author %>
-          on <%= post.date %></p>
+          on <%= post.timestamp.toLocaleDateString() %></p>
         <p class="post-subtitle">
           <%= post.body %>
         </p>
