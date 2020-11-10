@@ -103,12 +103,13 @@ posts.recent = (userId, callback) => {
  */
 posts.trending = (userId, callback) => {
   // TODO: Implement trending sort
-  var timestamp = Math.round(new Date().getTime() / 1000);
+  var timestamp = new Date().getTime();
   var secondsPerMinute = 60;
   var minutesPerHour = 60;
   var hoursPerDay = 24;
   var thirtyDaysInSeconds = 30 * hoursPerDay * minutesPerHour * secondsPerMinute;
-  var thirtyDaysAgo = timestamp - thirtyDaysInSeconds;
+  var thirtyDaysInMilliSeconds = thirtyDaysInSeconds * 1000;
+  var thirtyDaysAgo = (timestamp - thirtyDaysInMilliSeconds);
   var sql = `
     SELECT
       Posts.id AS id,
