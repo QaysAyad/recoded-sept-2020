@@ -14,10 +14,11 @@
  * error_message will always be defined when success is false.
  * redirect_uri must only be used when success is true.
  */
-function create_post(title, message, callback) {
+function create_post(title, message, parent_post_id, callback) {
   var post = {
     title: title,
-    message: message
+    message: message,
+    parent_post_id: parent_post_id,
   };
 
   $.ajax({
