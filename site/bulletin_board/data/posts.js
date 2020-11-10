@@ -229,5 +229,43 @@ posts.upvote = (id, user, vote, callback) => {
   });
 };
 
+
+/**
+ * Retrieves a list of reply for the trending posts.
+ * {
+ *   id: string,
+ *   author: string,
+ *   body: string,
+ *   timestamp: date,
+ * }
+ */
+posts.replies = (parent_post_id, callback) => {
+  var sql = `
+    SELECT
+      Posts.id AS id,
+      Posts.body,
+      Posts.timestamp,
+      Author.username AS author
+    FROM
+      Posts
+      INNER JOIN Users AS Author ON Posts.user_id = Author.id
+    WHERE
+      Posts.parent_post_id = ? 
+    ORDER BY
+      Posts.timestamp DESC
+  `;
+  db.all(sql, [parent_post_id], (err, rows) => {
+    console.log(err);
+    if (err) {
+      callback([]);
+      return;
+    }
+    rows.forEach(e => e.timestamp = e.timestamp ? new Date(e.timestamp) : undefined);
+    console.log(rows);
+
+    callback(rows);
+  });
+};
+
 module.exports = posts;
 
