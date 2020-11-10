@@ -76,6 +76,8 @@ posts.recent = (userId, callback) => {
       Posts
       INNER JOIN Users AS Author ON Posts.user_id = Author.id
       LEFT OUTER JOIN PostUpvotes ON PostUpvotes.post_id = Posts.id AND PostUpvotes.user_id = ?
+    WHERE
+      Posts.parent_post_id IS NULL
     ORDER BY
       Posts.id DESC
     LIMIT 100
@@ -124,12 +126,12 @@ posts.trending = (userId, callback) => {
       INNER JOIN Users AS Author ON Posts.user_id = Author.id
       LEFT OUTER JOIN PostUpvotes ON PostUpvotes.post_id = Posts.id AND PostUpvotes.user_id = ?
     WHERE
-      timestamp > ?
+      Posts.parent_post_id IS NULL AND timestamp > ?
     ORDER BY
       Posts.votes DESC
     LIMIT 100
   `;
-  db.all(sql, [ userId, thirtyDaysAgo ], (err, rows) => {
+  db.all(sql, [userId, thirtyDaysAgo], (err, rows) => {
     if (err) {
       callback([]);
       return;
