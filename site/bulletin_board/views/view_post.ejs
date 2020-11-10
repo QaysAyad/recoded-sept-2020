@@ -20,7 +20,21 @@
           <%= post.body %>
         </p>
       </div>
-
+      <hr>
+      <div class="pl-5">
+        <% posts.forEach(function(post){ %>
+          <div class="post-preview">
+              <p class="post-meta">
+              Posted by
+              <%= post.author %>
+              on <%= post.timestamp.toLocaleDateString() %></p>
+              <span class="post-subtitle">
+                <%= post.body %>
+              </span>
+            </div>
+          <hr>
+        <% }); %>
+      </div>
     </div>
   </div>
 
