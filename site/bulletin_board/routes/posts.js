@@ -25,7 +25,9 @@ router.get('/create', (req, res, next) => {
 /** EJS: The detailed view of a single post. */
 router.get('/:id', (req, res, next) => {
   datasource.retrieve(req.params['id'], req.user.id, (post) => {
-    res.render('view_post', { title: post.title, post: post });
+    datasource.replies(req.params['id'], (posts) => {
+      res.render('view_post', { title: post.title, post: post,posts:posts });
+    });
   });
 });
 
