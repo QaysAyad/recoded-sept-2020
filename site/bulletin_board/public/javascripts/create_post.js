@@ -19,7 +19,7 @@ post_form.submit((event) => {
   // Hide any previous error
   post_error.hide();
 
-  create_post(title, message, function(result){
+  create_post(title, message, undefined, function(result){
     if (result.success) {
       document.location = result.redirect_uri;
     } else {

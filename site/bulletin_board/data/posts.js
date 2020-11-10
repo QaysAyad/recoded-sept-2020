@@ -20,8 +20,8 @@ posts.retrieve = (id, userId, callback) => {
     SELECT
       Posts.id AS id,
       Posts.title,
+      Posts.timestamp,
       Author.username AS author,
-      Posts.date,
       Posts.body AS body,
       PostUpvotes.post_id IS NOT NULL AS liked,
       '/posts/' + Posts.id AS url
@@ -32,7 +32,7 @@ posts.retrieve = (id, userId, callback) => {
     WHERE
       Posts.id = ?
     ORDER BY
-      date DESC
+      timestamp DESC
   `;
   db.get(sql, [ userId, id ], (err, row) => {
     if (err || !row) {
@@ -42,11 +42,11 @@ posts.retrieve = (id, userId, callback) => {
     callback({
       id: row.id,
       title: row.title,
-      author: row.user_id,
-      date: row.date,
+      author: row.author,
       liked: row.liked,
       url: "/posts/" + id,
-      body: row.body
+      body: row.body,
+      timestamp: row.timestamp ? new Date(row.timestamp) : undefined,
     });
   });
 };
@@ -67,8 +67,8 @@ posts.recent = (userId, callback) => {
     SELECT
       Posts.id AS id,
       Posts.title,
+      Posts.timestamp,
       Author.username AS author,
-      Posts.date,
       PostUpvotes.post_id IS NOT NULL AS liked,
       '/posts/' + Posts.id AS url,
       substr(Posts.body, 0, 140) AS excerpt
@@ -76,6 +76,8 @@ posts.recent = (userId, callback) => {
       Posts
       INNER JOIN Users AS Author ON Posts.user_id = Author.id
       LEFT OUTER JOIN PostUpvotes ON PostUpvotes.post_id = Posts.id AND PostUpvotes.user_id = ?
+    WHERE
+      Posts.parent_post_id IS NULL
     ORDER BY
       Posts.id DESC
     LIMIT 100
@@ -85,6 +87,7 @@ posts.recent = (userId, callback) => {
       callback([]);
       return;
     }
+    rows.forEach(e => e.timestamp = e.timestamp ? new Date(e.timestamp) : undefined);
     callback(rows);
   });
 };
@@ -102,18 +105,19 @@ posts.recent = (userId, callback) => {
  */
 posts.trending = (userId, callback) => {
   // TODO: Implement trending sort
-  var timestamp = Math.round(new Date().getTime() / 1000);
+  var timestamp = new Date().getTime();
   var secondsPerMinute = 60;
   var minutesPerHour = 60;
   var hoursPerDay = 24;
   var thirtyDaysInSeconds = 30 * hoursPerDay * minutesPerHour * secondsPerMinute;
-  var thirtyDaysAgo = timestamp - thirtyDaysInSeconds;
+  var thirtyDaysInMilliSeconds = thirtyDaysInSeconds * 1000;
+  var thirtyDaysAgo = (timestamp - thirtyDaysInMilliSeconds);
   var sql = `
     SELECT
       Posts.id AS id,
       Posts.title,
+      Posts.timestamp,
       Author.username AS author,
-      Posts.date,
       PostUpvotes.post_id IS NOT NULL AS liked,
       '/posts/' + Posts.id AS url,
       substr(Posts.body, 0, 140) AS excerpt
@@ -122,16 +126,17 @@ posts.trending = (userId, callback) => {
       INNER JOIN Users AS Author ON Posts.user_id = Author.id
       LEFT OUTER JOIN PostUpvotes ON PostUpvotes.post_id = Posts.id AND PostUpvotes.user_id = ?
     WHERE
-      timestamp > ?
+      Posts.parent_post_id IS NULL AND timestamp > ?
     ORDER BY
       Posts.votes DESC
     LIMIT 100
   `;
-  db.all(sql, [ userId, thirtyDaysAgo ], (err, rows) => {
+  db.all(sql, [userId, thirtyDaysAgo], (err, rows) => {
     if (err) {
       callback([]);
       return;
     }
+    rows.forEach(e => e.timestamp = e.timestamp ? new Date(e.timestamp) : undefined);
     callback(rows);
   });
 };
@@ -152,10 +157,13 @@ posts.trending = (userId, callback) => {
 posts.create = (post, user, callback) => {
   var success = true;
   var error_message = "";
-
-  if (post.title.trim().length < 10) {
+  if (post.parent_post_id) {
+    post.title = "Reply to:"
+  } else if (post.title.trim().length < 10) {
+     success = false;
     error_message = "A post title is required (minimum 10 characters).";
   } else if (post.message.trim().length < 20) {
+     success = false;
     error_message = "A post message is required (minimum 20 characters).";
   }
 
@@ -167,12 +175,12 @@ posts.create = (post, user, callback) => {
     return callback(result);
   }
 
-  var months = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ];
-  var date = new Date();
-  var sql ='INSERT INTO posts (title, body, date, user_id, timestamp) VALUES (?, ?, ?, ?, ?)'
-  var now = months[date.getMonth()] + " " + date.getDate() + ", " + date.getFullYear();
-  var timestamp = Math.round(new Date().getTime() / 1000);
-  var params =[post.title, post.message, now, user.id, timestamp]
+  // var months = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ];
+  // var date = new Date();
+  var sql ='INSERT INTO posts (title, body, user_id, parent_post_id, timestamp) VALUES (?, ?, ?, ?, ?)'
+  // var now = months[date.getMonth()] + " " + date.getDate() + ", " + date.getFullYear();
+  var timestamp = new Date().getTime();
+  var params =[post.title, post.message, user.id, post.parent_post_id, timestamp]
   db.run(sql, params, function (err, result) {
     var success = !err;
     var result = {
@@ -218,6 +226,44 @@ posts.upvote = (id, user, vote, callback) => {
     db.run(sql, [id], function (err, result) {
       callback();
     });
+  });
+};
+
+
+/**
+ * Retrieves a list of reply for the trending posts.
+ * {
+ *   id: string,
+ *   author: string,
+ *   body: string,
+ *   timestamp: date,
+ * }
+ */
+posts.replies = (parent_post_id, callback) => {
+  var sql = `
+    SELECT
+      Posts.id AS id,
+      Posts.body,
+      Posts.timestamp,
+      Author.username AS author
+    FROM
+      Posts
+      INNER JOIN Users AS Author ON Posts.user_id = Author.id
+    WHERE
+      Posts.parent_post_id = ? 
+    ORDER BY
+      Posts.timestamp DESC
+  `;
+  db.all(sql, [parent_post_id], (err, rows) => {
+    console.log(err);
+    if (err) {
+      callback([]);
+      return;
+    }
+    rows.forEach(e => e.timestamp = e.timestamp ? new Date(e.timestamp) : undefined);
+    console.log(rows);
+
+    callback(rows);
   });
 };
 
