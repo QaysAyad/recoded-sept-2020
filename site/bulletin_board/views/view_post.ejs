@@ -23,6 +23,27 @@
 
     </div>
   </div>
+
+  <div class="fixed-bottom bg-light p-3">
+    <div class="alert alert-danger fade show" style="display: none;" id="reply_error">
+      <h4 class="alert-heading">Error!</h4> <span id="reply_error_message"></span>
+    </div>
+    <div class="alert alert-primary fade show" style="display: none;" id="alert">
+      <h4 class="alert-heading" id="alert_heading">Replaying to:</h4> <span id="alert_message"></span>
+    </div>
+    <form data-postid="<%= post.id %>" data-post-title="<%= post.title %>" id="reply_form" class="container">
+      <div class="row mx-auto">
+        <div class="col-10">
+            <input class="form-control" id="post_reply" placeholder="write reply" required></input>
+        </div>
+        <div class="col-2">
+          <input class="btn btn-primary text-uppercase font-weight-bold" 
+          type="submit" value="submit reply" id="reply_button" />
+        </div>
+      </div>
+    </form>
+    </div>
+  </div>
 </div>
 
 <%- include('footer', { javascript_uri: '/javascripts/view_post.js' }); %>
