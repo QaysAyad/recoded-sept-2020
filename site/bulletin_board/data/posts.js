@@ -154,10 +154,13 @@ posts.trending = (userId, callback) => {
 posts.create = (post, user, callback) => {
   var success = true;
   var error_message = "";
-
-  if (post.title.trim().length < 10) {
+  if (post.parent_post_id) {
+    post.title = "Reply to:"
+  } else if (post.title.trim().length < 10) {
+     success = false;
     error_message = "A post title is required (minimum 10 characters).";
   } else if (post.message.trim().length < 20) {
+     success = false;
     error_message = "A post message is required (minimum 20 characters).";
   }
 
@@ -171,10 +174,10 @@ posts.create = (post, user, callback) => {
 
   // var months = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ];
   // var date = new Date();
-  var sql ='INSERT INTO posts (title, body, user_id, timestamp) VALUES (?, ?,  ?, ?)'
+  var sql ='INSERT INTO posts (title, body, user_id, parent_post_id, timestamp) VALUES (?, ?, ?, ?, ?)'
   // var now = months[date.getMonth()] + " " + date.getDate() + ", " + date.getFullYear();
   var timestamp = new Date().getTime();
-  var params =[post.title, post.message, user.id, timestamp]
+  var params =[post.title, post.message, user.id, post.parent_post_id, timestamp]
   db.run(sql, params, function (err, result) {
     var success = !err;
     var result = {
